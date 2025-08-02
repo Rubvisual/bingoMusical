@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bingo Musical Pipix</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fafafa;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;
+    max-width: 700px;
+    margin: auto;
+  }
+  .block {
+    background: #eee;
+    border: 2px solid #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    line-height: 1.3;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 6px;
+  }
+  .block.red {
+    background-color: #f44336; /* rojo */
+    color: white;
+    border-color: #d32f2f;
+  }
+</style>
+</head>
+<body>
+
+<h1 style="text-align:center;">Bingo Musical</h1>
+
+<div class="grid" id="bingoGrid"></div>
+
+<script>
+  // Array con las 89 canciones
+  const textos = [
+    "Persiana Americana - Soda Stereo",
+    "De Música Ligera - Soda Stereo",
+    "La Flor Más Bella - Memphis La Blusera",
+    "La Guitarra - Los Auténticos Decadentes",
+    "Loco (Tu Forma De Ser) - Los Auténticos Decadentes",
+    "Mariposa Tecknicolor - Fito Paez",
+    "El Matador - Los Fabulosos Cadillacs",
+    "La Bifurcada - Memphis La Blusera",
+    "Mil Horas - Los Abuelos De La Nada",
+    "Pasos Al Costado - Turf",
+    "Todo Sigue Igual - Viejas Locas",
+    "Campanas en la Noche - Los Tipitos",
+    "Ji Ji Ji - Patricio Rey y sus Redonditos de Ricota",
+    "La Pachanga - Vilma Palma e Vampiros",
+    "Auto Rojo - Vilma Palma e Vampiros",
+    "Costumbres Argentinas - Los Auténticos Decadentes",
+    "La Bolsa - Bersuit Vergarabat",
+    "Demoliendo Hoteles - Charly García",
+    "Vasos Vacíos - Los Fabulosos Cadillacs",
+    "Ahora Te Puedes Marchar - Luis Miguel",
+    "La Incondicional - Luis Miguel",
+    "Suave - Luis Miguel",
+    "Azul - Cristian Castro",
+    "Lloviendo Estrellas - Cristian Castro",
+    "Será Que No Me Amas - Luis Miguel",
+    "Me Voy - Julieta Venegas",
+    "Colgando en tus manos - Carlos Baute, Marta Sánchez",
+    "Mi Primer Millón - Bacilos",
+    "Caraluna - Bacilos",
+    "Salomé - Chayanne",
+    "Suavemente - Elvis Crespo",
+    "Amor A La Mexicana - Thalía",
+    "Arrasando - Thalía",
+    "Procura - Chichi Peralta, Jandy Feliz",
+    "Gasolina - Daddy Yankee",
+    "Lo Que Pasó, Pasó - Daddy Yankee",
+    "Pobre Diabla - Don Omar",
+    "Obsesión - Aventura, Judy Santos",
+    "Salió El Sol - Don Omar",
+    "Rakata - Wisin & Yandel",
+    "La Camisa Negra - Juanes",
+    "La Bicicleta - Carlos Vives, Shakira",
+    "Ven Conmigo (Solamente Tú) - Christina Aguilera",
+    "Ciega, Sordomuda - Shakira",
+    "Danza Kuduro - Don Omar, Lucenzo",
+    "Waka Waka (Esto Es Africa) - Shakira",
+    "Duraznito - Los Pibes Chorros",
+    "La Ventanita - Grupo Sombras",
+    "Nunca Me Faltes - Antonio Ríos",
+    "El Bombón - Los Palmeras",
+    "Que Calor - Los Pibes Chorros",
+    "Beso a Beso - La Mona Jiménez, Hugh Padgham",
+    "Soy Cordobés - Rodrigo",
+    "Ocho Cuarenta - Rodrigo",
+    "No Me Arrepiento de Este Amor - Gilda",
+    "Corazón Valiente - Gilda",
+    "Una Calle Nos Separa - Néstor en Bloque",
+    "Dime Si Eres Feliz - La Champions Liga",
+    "Y Tu Con Él (Aquí Extrañándote) - Grupo Play",
+    "Mayonesa - Chocolate",
+    "El Tiburón - Proyecto Uno",
+    "Me Olvidé de Ti - 18 Kilates",
+    "Livin’ La Vida Loca - Ricky Martin",
+    "The Ketchup Song (Aserejé) - Las Ketchup",
+    "Barbie Girl - Aqua",
+    "Macarena - Los Del Río",
+    "I Gotta Feeling - Black Eyed Peas",
+    "I Want It That Way - Backstreet Boys",
+    "Everybody (Backstreet’s Back) - Backstreet Boys",
+    "A Veces - Mambrú",
+    "Llega La Noche - Bandana",
+    "Bailarina - Miranda!",
+    "Yegua (En Vivo) - Babasónicos",
+    "Para No Verte Más - La Mosca",
+    "Laura No Está - Nek",
+    "La Chica Del Bikini Azul - Luis Miguel",
+    "Todos Me Miran - Gloria Trevi",
+    "Olvídame y Pega la Vuelta - Pimpinela",
+    "Yo No Soy Esa Mujer - Paulina Rubio",
+    "Don - Miranda!",
+    "Que Nadie Sepa Mi Sufrir - Soledad",
+    "Despacito - Luis Fonsi, Daddy Yankee",
+    "Ai Se Eu Te Pego - Michel Teló",
+    "Propuesta Indecente - Romeo Santos",
+    "Como Alí - Los Piojos",
+    "Por Mil Noches - Airbag",
+    "Flores Amarillas - Floricienta",
+    "Gelatina - Nietos del Futuro",
+    "Coolo - Illya Kuryaki & The Valderramas"
+  ];
+
+  // Función para obtener n textos aleatorios sin repetir
+  function obtenerTextosAleatorios(arr, cantidad) {
+    const copia = [...arr];
+    const resultado = [];
+    for(let i = 0; i < cantidad; i++) {
+      const idx = Math.floor(Math.random() * copia.length);
+      resultado.push(copia.splice(idx, 1)[0]);
+    }
+    return resultado;
+  }
+
+  function crearGrid() {
+    const grid = document.getElementById('bingoGrid');
+    grid.innerHTML = '';
+
+    const textosElegidos = obtenerTextosAleatorios(textos, 12);
+
+    textosElegidos.forEach(texto => {
+      const block = document.createElement('div');
+      block.classList.add('block');
+      block.textContent = texto;
+      block.addEventListener('click', () => {
+        block.classList.toggle('red');
+      });
+      grid.appendChild(block);
+    });
+  }
+
+  window.onload = () => {
+    crearGrid();
+  };
+</script>
+
+</body>
+</html>
